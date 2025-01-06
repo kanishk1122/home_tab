@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Time & Days Left</title>
+    <script>
+      // Function to update live time with milliseconds
+      function updateTime() {
+        const timeDiv = document.getElementById("timeDisplay");
+        const now = new Date();
+        const formattedTime =
+          now.toLocaleTimeString("en-GB", { hour12: false }) +
+          "." +
+          String(now.getMilliseconds()).padStart(3, "0");
+        timeDiv.textContent = formattedTime;
+      }
+
+      // Function to calculate and display days left in the year
+      function updateDaysLeft() {
+        const today = new Date();
+        const startOfYear = new Date(today.getFullYear(), 0, 0);
+        const diff = today - startOfYear;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+
+        // Determine if the current year is a leap year
+        const isLeapYear = (year) => {
+          return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+        };
+
+        const daysInYear = isLeapYear(today.getFullYear()) ? 366 : 365;
+        const daysLeft = daysInYear - dayOfYear;
+        let percentageComplete = ((dayOfYear / daysInYear) * 100).toFixed(2);
+        // const percentageComplete = ((dayOfYear / daysInYear) * 100).toFixed(2);
+
+        setInterval(() => {
+          percentageComplete = ((dayOfYear / daysInYear) * 100).toFixed(2);
+          // updateDaysLeft();
+        }, 10);
+
+        // Update the percentage complete element
+        let percentageCompleteElement =
+          document.getElementById("percentageComplete");
+
+        // Update the days left content
+        const daysLeftContainer = document.getElementById("dayLeftContainer");
+        daysLeftContainer.innerHTML = `
+    ${Array.from(
+      { length: dayOfYear },
+      (_, index) => `
+      <div
+        style="${
+          index + 1 === dayOfYear
+            ? `background: linear-gradient(180deg, rgba(255, 255, 255, 1) ${percentageComplete}%, rgba(39, 39, 42, 1) ${percentageComplete}%);`
+            : ""
+        }"
+        class="w-[40px] h-[40px] rounded ${
+          index + 1 === dayOfYear ? "" : "bg-white"
+        } flex items-center justify-center"
+      >
+        ${
+          index + 1 === dayOfYear
+            ? `<span class="text-xs font-bold text-black">${percentageComplete}%</span>`
+            : ""
+        }
+      </div>
+    `
+    ).join("")}
+    ${Array.from(
+      { length: daysLeft },
+      () => `
+      <div class="w-[40px] h-[40px] bg-zinc-800 rounded"></div>
+    `
+    ).join("")}
+  `;
+
+        // Update the days left element
+        let daysLeftElement = document.getElementById("daysLeft");
+        if (!daysLeftElement) {
+          daysLeftElement = document.createElement("div");
+          daysLeftElement.id = "daysLeft";
+          daysLeftElement.className = "text-xl mt-2";
+          document.body.appendChild(daysLeftElement);
+        }
+        // daysLeftElement.textContent = `${daysLeft} days left in the year`;
+
+        // Style the days left container
+        daysLeftContainer.style.display = "flex";
+        daysLeftContainer.style.flexWrap = "wrap";
+        daysLeftContainer.style.gap = "4px";
+      }
+      // Update live time and days left every second
+      setInterval(() => {
+        updateTime();
+        // updateDaysLeft();
+      }, 10);
+
+      let lastHour = new Date().getHours();
+
+      setInterval(() => {
+        const currentHour = new Date().getHours();
+        if (currentHour !== lastHour) {
+          updateDaysLeft();
+          lastHour = currentHour;
+        }
+      }, 1000);
+
+      // Ensure the container becomes visible
+      window.onload = () => {
+        updateTime();
+        updateDaysLeft();
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style></style>
+  </head>
+  <body
+    class="bg-zinc-900 w-screen h-screen text-white flex flex-col justify-center items-center p-2"
+  >
+    <div class="text-center w-full h-full relative">
+      <!-- Time Display -->
+      <div
+        id="timeDisplay"
+        class="text-6xl font-bold mb-8 absolute top-1/2 left-1/2 -translate-x-1/2"
+      ></div>
+
+      <!-- Days Left Display -->
+      <div
+        id="dayLeftContainer"
+        class="dayLeftContainer bg-zinc-600 text-white p-4 rounded-lg shadow-lg w-full h-full flex flex-wrap gap-1"
+      ></div>
+    </div>
+  </body>
+</html>
