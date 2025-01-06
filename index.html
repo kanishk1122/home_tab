@@ -83,7 +83,6 @@
           daysLeftElement.className = "text-xl mt-2";
           document.body.appendChild(daysLeftElement);
         }
-        // daysLeftElement.textContent = `${daysLeft} days left in the year`;
 
         // Style the days left container
         daysLeftContainer.style.display = "flex";
@@ -93,8 +92,7 @@
       // Update live time and days left every second
       setInterval(() => {
         updateTime();
-        // updateDaysLeft();
-      }, 10);
+      }, 1);
 
       let lastHour = new Date().getHours();
 
@@ -113,7 +111,6 @@
       };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style></style>
   </head>
   <body
     class="bg-zinc-900 w-screen h-screen text-white flex flex-col justify-center items-center p-2"
