@@ -31,7 +31,18 @@
 
         const daysInYear = isLeapYear(today.getFullYear()) ? 366 : 365;
         const daysLeft = daysInYear - dayOfYear;
-        let percentageComplete = ((dayOfYear / daysInYear) * 100).toFixed(2);
+
+        const totalMinutesToday = 24 * 60; // Total minutes in a day
+        const minutesElapsedToday = today.getHours() * 60 + today.getMinutes(); // Minutes elapsed so far
+        const hoursLeftToday = 24 - today.getHours(); // Remaining hours today
+        const percentageComplete = (
+          (minutesElapsedToday / totalMinutesToday) *
+          100
+        ).toFixed(2); // Percentage complete
+
+        console.log(`Hours left today: ${hoursLeftToday}`);
+        console.log(`Percentage of the day complete: ${percentageComplete}%`);
+
         // const percentageComplete = ((dayOfYear / daysInYear) * 100).toFixed(2);
 
         setInterval(() => {
@@ -67,6 +78,7 @@
       </div>
     `
     ).join("")}
+    
     ${Array.from(
       { length: daysLeft },
       () => `
