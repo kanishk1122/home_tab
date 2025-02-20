@@ -1,6 +1,8 @@
 # Modern Day Tracker & Todo Manager 🌟
 
-![Day Tracker Preview](screenshots/preview.png)
+![Day Tracker Preview](./Screenshot%202025-02-20%20233945.png)
+![Add Tasks](./Screenshot%202025-02-20%20234028.png)
+![Task Preview](./Screenshot%202025-02-20%20233836.png)
 
 A sleek, modern application that combines a visual day tracker with a powerful todo management system.
 
