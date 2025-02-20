@@ -1,150 +1,129 @@
 # Modern Day Tracker & Todo Manager 🌟
 
-![Day Tracker Preview](./Screenshot%202025-02-20%20233945.png)
-![Add Tasks](./Screenshot%202025-02-20%20234028.png)
-![Task Preview](./Screenshot%202025-02-20%20233836.png)
+![Day Tracker Preview](./image.png)
 
-A sleek, modern application that combines a visual day tracker with a powerful todo management system.
+A minimalist yet powerful daily task tracker with real-time updates and visual progress indicators.
 
-## ✨ Features
+## 🎯 Key Features
 
-### 1. Visual Day Tracker
+- **Live Clock Display**
 
-- 📅 Interactive yearly calendar view
-- 🔄 Real-time day progression
-- 📊 Visual percentage completion for current day
-- 🎯 Click on any day to manage todos
+  - Millisecond precision
+  - Clean, minimalist design
+  - Responsive sizing across devices
 
-### 2. Real-Time Clock
+- **Visual Year Progress**
 
-- ⌚ Precise time display with milliseconds
-- 🌓 24-hour format
-- 🔄 Live updates
+  - Interactive day blocks
+  - Real-time progress tracking
+  - Color-coded status indicators
+  - Hover effects and tooltips
 
-### 3. Todo Management
+- **Task Management**
+  - Daily task organization
+  - Drag-and-drop prioritization
+  - Quick edit functionality
+  - Task count indicators
+  - Detailed task views
 
-- ✏️ Create and organize todos by day
-- 📝 Rich text descriptions
-- 🔍 Quick view and edit functionality
-- 🗑️ Easy deletion
-- 🔄 Drag and drop reordering
+## 🚀 Quick Start
 
-## 🚀 Getting Started
+1. **Setup Options:**
 
-1. Open `index.html` in your browser
-2. The main screen shows:
-   - Current time in large display
-   - Year progress with interactive day blocks
-   - White blocks: Past days
-   - Gradient block: Current day
-   - Dark blocks: Future days
+   - Use hosted version: [Live Demo](https://kanishk1122.github.io/home_tab/)
+   - Download and run locally
+   - Set as browser homepage
 
-## 💡 How to Use
+2. **Local Installation:**
 
-### Managing Todos
+   ```bash
+   git clone https://github.com/kanishk1122/home_tab.git
+   cd home_tab
+   ```
 
-1. Click on any day block to open the todo manager
-2. Add new todos:
-   - Enter title and description
-   - Click "Add" to save
-3. Existing todos:
-   - Click "View" to see full details
-   - Click "Delete" to remove
-   - Double-click title to edit
-   - Drag to reorder
+3. **Browser Setup:**
+   - [Detailed Browser Setup Guide](BROWSER_SETUP.md)
+   - Works with Chrome, Firefox, Edge, and Safari
 
-### Day Tracker
+## 💻 Interface Guide
 
-- Current day shows completion percentage
-- Click any day to view/manage todos
-- Visual yearly progress at a glance
+### Time Display
 
-## 🎨 Theme
+- Left panel shows current time
+- Updates in real-time
+- 24-hour format with milliseconds
+- Responsive sizing
 
-The application uses a modern dark theme with:
+### Day Grid
 
-- Sleek gradients
+- White blocks: Past days
+- Gradient block: Current day
+- Dark blocks: Future days
+- Hover for day number
+- Click to manage tasks
+
+### Task Management
+
+- Click any day to open task manager
+- Add tasks with title and description
+- Drag to reorder priority
+- Quick view and edit options
+- Task count badges
+
+## 🎨 Design Features
+
+- Dark theme optimized
+- Blur effects and gradients
 - Smooth animations
-- High contrast text
-- Intuitive visual hierarchy
+- Responsive layout
+- Mobile-friendly design
 
-## 🔧 Technical Features
+## ⚡ Performance
 
-- Local storage persistence
-- Real-time updates
-- Responsive design
-- Drag and drop functionality
-- Smooth animations
-- Cross-browser compatibility
+- Lightweight implementation
+- Local storage for data
+- No external dependencies
+- Fast loading times
+- Offline functionality
 
-## 🎯 Tips
+## 🔧 Technical Details
 
-1. Double-click todo titles to edit them quickly
-2. Use drag and drop to prioritize todos
-3. Click outside modals to close them
-4. View button shows full todo details
+- Pure HTML/CSS/JavaScript
+- Local storage for persistence
+- Responsive grid system
+- CSS Grid and Flexbox layout
+- Custom scrollbar styling
+
+## 📱 Device Support
+
+- **Desktop:** Full support
+- **Tablet:** Optimized layout
+- **Mobile:** Responsive design
+- **Minimum width:** 320px
+- **Recommended:** 768px+
 
 ## 🔜 Upcoming Features
 
-- [ ] Categories and tags
-- [ ] Todo statistics
-- [ ] Export/Import functionality
-- [ ] Multiple themes
-- [ ] Mobile app version
-
-## 📱 Responsive Design
-
-Works seamlessly across:
-
-- 💻 Desktop
-- 📱 Tablet
-- 📱 Mobile
-
-## 🌐 Browser Setup
-
-### Set as Homepage
-
-#### Google Chrome
-
-1. Settings → On startup
-2. Select "Open a specific page"
-3. Enter: `file:///D:/home_tab/index.html`
-
-#### Firefox
-
-1. Settings → Home
-2. Set Homepage to: `file:///D:/home_tab/index.html`
-
-#### Edge
-
-1. Settings → On startup
-2. Add page: `file:///D:/home_tab/index.html`
-
-### New Tab Override
-
-- Chrome: Install "New Tab Redirect" extension
-- Firefox: Install "New Tab Override" extension
-- Edge: Install "Custom New Tab URL" extension
-
-### Quick Setup
-
-1. Download the repository
-2. Place in `D:/home_tab/`
-3. Set browser homepage to local file path
-4. Or use hosted version: `https://kanishk1122.github.io/home_tab/`
-
-[Detailed Setup Guide](BROWSER_SETUP.md)
+- [ ] Theme customization
+- [ ] Data export/import
+- [ ] Task categories
+- [ ] Search functionality
+- [ ] Task statistics
 
 ## 🤝 Contributing
 
-Feel free to:
-
-- Report bugs
-- Suggest features
-- Submit pull requests
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open pull request
 
 ## 📝 License
 
-MIT License - feel free to use and modify!
+MIT License - Open source and free to use
 
-Hostead link : https://kanishk1122.github.io/home_tab/
+---
+
+💻 [View Code](https://github.com/kanishk1122/home_tab)
+🌐 [Live Demo](https://kanishk1122.github.io/home_tab/)
+🐛 [Report Bug](https://github.com/kanishk1122/home_tab/issues)
