@@ -4,6 +4,237 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kanishk home tab</title>
+    <style>
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8);
+        animation: fadeIn 0.5s;
+      }
+      .modal-content {
+        background-color: #111111;
+        margin: 0 auto;
+        padding: 30px;
+        border: 1px solid #333;
+        width: 100%;
+        height: 100%;
+        max-width: 800px;
+        border-radius: 0;
+        animation: slideIn 0.5s;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        color: white;
+        width: 90%;
+      }
+      .close {
+        color: #888;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .close:hover,
+      .close:focus {
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .todo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin: 0;
+        background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+        border: 1px solid #333;
+        border-radius: 10px;
+        color: #fff;
+        cursor: move;
+        animation: fadeIn 0.5s;
+        width: 100%;
+        max-width: none;
+        word-wrap: break-word;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s, background-color 0.2s;
+        overflow: hidden;
+      }
+      .todo-item:hover {
+        transform: scale(1.05);
+        background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+        transform: translateY(-2px);
+      }
+      .todo-item .actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+        margin-left: 20px;
+        white-space: nowrap;
+      }
+      .todo-item button {
+        background: none;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+        min-width: 80px;
+        text-align: center;
+      }
+      .todo-item button.delete {
+        color: #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+        border: 1px solid rgba(255, 68, 68, 0.2);
+      }
+      .todo-item button.delete:hover {
+        background: rgba(255, 68, 68, 0.2);
+        color: white;
+      }
+      .todo-item button.view {
+        color: #00aaff;
+        background: rgba(0, 170, 255, 0.1);
+        border: 1px solid rgba(0, 170, 255, 0.2);
+      }
+      .todo-item button.view:hover {
+        background: rgba(0, 170, 255, 0.2);
+        color: white;
+      }
+      .todo-item h3 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: auto;
+        max-width: calc(100% - 200px);
+      }
+      .input-container {
+        width: 100%;
+        margin-bottom: 20px;
+        max-width: none;
+      }
+      .input-container input,
+      .input-container textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 5px;
+        font-size: 1em;
+        color: white;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      .input-container label {
+        color: #888;
+      }
+      .todo-details {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      .todo-details-content {
+        background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 90%;
+        margin: 50px auto;
+        border: 1px solid #333;
+        overflow: auto;
+      }
+      .todo-details-content h3 {
+        margin: 0 0 10px;
+        word-wrap: break-word;
+        max-width: 100%;
+        line-height: 1.4;
+      }
+      .todo-details-content textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        font-size: 1em;
+        color: white;
+        background-color: #1a1a1a;
+        min-height: 150px;
+        resize: vertical;
+        word-wrap: break-word;
+        line-height: 1.5;
+      }
+      .todo-details .close {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateY(-50px);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      #saveTodo {
+        background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+        color: white;
+        border: 1px solid #333;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 200px;
+      }
+      #saveTodo:hover {
+        background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+        transform: translateY(-2px);
+      }
+      #todoList {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      .todo-item .content {
+        flex: 1;
+        min-width: 0;
+      }
+    </style>
     <script>
       // Function to update live time with milliseconds
       function updateTime() {
@@ -69,6 +300,7 @@
         class="w-[40px] h-[40px] rounded ${
           index + 1 === dayOfYear ? "" : "bg-white"
         } flex items-center justify-center"
+        onclick="handleDayClick(${index + 1})"
       >
         ${
           index + 1 === dayOfYear
@@ -81,8 +313,10 @@
     
     ${Array.from(
       { length: daysLeft },
-      () => `
-      <div class="w-[40px] h-[40px] bg-zinc-800 rounded"></div>
+      (_, index) => `
+      <div class="w-[40px] h-[40px] bg-zinc-800 rounded" onclick="handleDayClick(${
+        dayOfYear + index + 1
+      })"></div>
     `
     ).join("")}
   `;
@@ -101,6 +335,139 @@
         daysLeftContainer.style.flexWrap = "wrap";
         daysLeftContainer.style.gap = "4px";
       }
+
+      // Function to handle day box click
+      function handleDayClick(day) {
+        const modal = document.getElementById("todoModal");
+        const todoListContainer = document.getElementById("todoList");
+        const todoTitleInput = document.getElementById("todoTitleInput");
+        const todoDescInput = document.getElementById("todoDescInput");
+        const saveButton = document.getElementById("saveTodo");
+
+        const todoList = JSON.parse(localStorage.getItem(`todo_${day}`)) || [];
+        todoListContainer.innerHTML = todoList
+          .map(
+            (item, index) => `
+              <div class="todo-item" draggable="true" ondragstart="drag(event)" id="todo_${day}_${index}">
+                <div class="content">
+                  <h3 ondblclick="editTodoItem(${day}, ${index}, 'title')">${item.title}</h3>
+                </div>
+                <div class="actions">
+                  <button class="delete" onclick="deleteTodoItem(${day}, ${index}, event)">Delete</button>
+                  <button class="view" onclick="viewTodoDetails(${day}, ${index}, event)">View</button>
+                </div>
+              </div>
+            `
+          )
+          .join("");
+
+        saveButton.onclick = () => {
+          const newTitle = todoTitleInput.value.trim();
+          const newDesc = todoDescInput.value.trim();
+          if (newTitle && newDesc) {
+            const newTodo = { title: newTitle, description: newDesc };
+            todoList.push(newTodo);
+            localStorage.setItem(`todo_${day}`, JSON.stringify(todoList));
+            todoListContainer.innerHTML += `
+              <div class="todo-item" draggable="true" ondragstart="drag(event)" id="todo_${day}_${
+              todoList.length - 1
+            }">
+                <div class="content">
+                  <h3 ondblclick="editTodoItem(${day}, ${
+              todoList.length - 1
+            }, 'title')">${newTitle}</h3>
+                </div>
+                <div class="actions">
+                  <button class="delete" onclick="deleteTodoItem(${day}, ${
+              todoList.length - 1
+            }, event)">Delete</button>
+                  <button class="view" onclick="viewTodoDetails(${day}, ${
+              todoList.length - 1
+            }, event)">View</button>
+                </div>
+              </div>
+            `;
+            todoTitleInput.value = "";
+            todoDescInput.value = "";
+          }
+        };
+
+        modal.style.display = "block";
+      }
+
+      // Function to delete a to-do item
+      function deleteTodoItem(day, index, event) {
+        event.stopPropagation();
+        const todoList = JSON.parse(localStorage.getItem(`todo_${day}`)) || [];
+        todoList.splice(index, 1);
+        localStorage.setItem(`todo_${day}`, JSON.stringify(todoList));
+        handleDayClick(day);
+      }
+
+      // Function to edit a to-do item
+      function editTodoItem(day, index, field) {
+        const todoList = JSON.parse(localStorage.getItem(`todo_${day}`)) || [];
+        const newValue = prompt(
+          `Edit your to-do ${field}:`,
+          todoList[index][field]
+        );
+        if (newValue !== null) {
+          todoList[index][field] = newValue.trim();
+          localStorage.setItem(`todo_${day}`, JSON.stringify(todoList));
+          handleDayClick(day);
+        }
+      }
+
+      // Function to view to-do details
+      function viewTodoDetails(day, index, event) {
+        event.stopPropagation();
+        const todoList = JSON.parse(localStorage.getItem(`todo_${day}`)) || [];
+        const todoDetails = document.getElementById("todoDetails");
+        const todoDetailsContent =
+          document.getElementById("todoDetailsContent");
+        todoDetailsContent.innerHTML = `
+          <h3>${todoList[index].title}</h3>
+          <textarea readonly>${todoList[index].description}</textarea>
+        `;
+        todoDetails.style.display = "block";
+      }
+
+      // Close the to-do details
+      function closeTodoDetails() {
+        document.getElementById("todoDetails").style.display = "none";
+      }
+
+      // Drag and drop functions
+      function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+      }
+
+      function allowDrop(event) {
+        event.preventDefault();
+      }
+
+      function drop(event) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text");
+        const draggedElement = document.getElementById(data);
+        event.target
+          .closest(".todo-item")
+          .insertAdjacentElement("beforebegin", draggedElement);
+      }
+
+      // Close the modal
+      function closeModal() {
+        document.getElementById("todoModal").style.display = "none";
+      }
+
+      // Close the modal when clicking outside of it
+      window.onclick = function (event) {
+        const modal = document.getElementById("todoModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
       // Update live time and days left every second
       setInterval(() => {
         updateTime();
@@ -125,7 +492,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body
-    class="bg-zinc-900 w-screen h-screen text-white flex flex-col justify-center items-center p-2"
+    class="bg-black w-screen h-screen text-white flex flex-col justify-center items-center p-2"
   >
     <div class="text-center w-full h-full relative">
       <!-- Time Display -->
@@ -139,6 +506,58 @@
         id="dayLeftContainer"
         class="dayLeftContainer bg-zinc-600 text-white p-4 rounded-lg shadow-lg w-full h-full flex flex-wrap gap-1"
       ></div>
+    </div>
+    <!-- To-Do Modal -->
+    <div id="todoModal" style="overflow: auto" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>To-Do List</h2>
+        <div class="input-container">
+          <label for="todoTitleInput">Title</label>
+          <input
+            type="text"
+            style="color: white"
+            id="todoTitleInput"
+            placeholder="Title"
+          />
+        </div>
+        <div class="input-container">
+          <label for="todoDescInput">Description</label>
+          <textarea
+            style="color: white"
+            id="todoDescInput"
+            placeholder="Description"
+          ></textarea>
+        </div>
+        <button
+          style="
+            color: white;
+            border: 2px solid black;
+            padding: 5px 15px;
+            border-radius: 10px;
+          "
+          id="saveTodo"
+        >
+          Add
+        </button>
+        <div
+          id="todoList"
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 70vh;
+          "
+          ondrop="drop(event)"
+          ondragover="allowDrop(event)"
+        ></div>
+      </div>
+    </div>
+    <!-- To-Do Details Modal -->
+    <div id="todoDetails" class="todo-details">
+      <div class="todo-details-content" id="todoDetailsContent"></div>
+      <span class="close" onclick="closeTodoDetails()">&times;</span>
     </div>
   </body>
 </html>
