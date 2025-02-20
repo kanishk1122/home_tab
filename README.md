@@ -100,6 +100,41 @@ Works seamlessly across:
 - 📱 Tablet
 - 📱 Mobile
 
+## 🌐 Browser Setup
+
+### Set as Homepage
+
+#### Google Chrome
+
+1. Settings → On startup
+2. Select "Open a specific page"
+3. Enter: `file:///D:/home_tab/index.html`
+
+#### Firefox
+
+1. Settings → Home
+2. Set Homepage to: `file:///D:/home_tab/index.html`
+
+#### Edge
+
+1. Settings → On startup
+2. Add page: `file:///D:/home_tab/index.html`
+
+### New Tab Override
+
+- Chrome: Install "New Tab Redirect" extension
+- Firefox: Install "New Tab Override" extension
+- Edge: Install "Custom New Tab URL" extension
+
+### Quick Setup
+
+1. Download the repository
+2. Place in `D:/home_tab/`
+3. Set browser homepage to local file path
+4. Or use hosted version: `https://kanishk1122.github.io/home_tab/`
+
+[Detailed Setup Guide](BROWSER_SETUP.md)
+
 ## 🤝 Contributing
 
 Feel free to:
