@@ -119,7 +119,7 @@ Browser settings → Homepage → Use this file path or deploy URL.
 2. Open chrome://extensions (or edge://extensions)
 3. Enable Developer Mode.
 4. Click Load Unpacked.
-5. Select folder: d:\Black_Hole_Dashboard
+5. Select folder: d:\home_tab
 6. Open a new tab to see override.
 
 ### 5. Firefox Temporary Add-on
