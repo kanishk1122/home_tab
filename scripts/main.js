@@ -50,9 +50,6 @@ async function clearIndexedDB() {
   transaction.objectStore(STORE_NAME).clear();
 }
 
-// ==========================================
-// 1. CLOCK FUNCTIONALITY
-// ==========================================
 function updateTime() {
   const timeDiv = document.getElementById("clock");
   if (!timeDiv) return;
@@ -66,9 +63,6 @@ function updateTime() {
   timeDiv.textContent = formattedTime;
 }
 
-// ==========================================
-// 2. WALLPAPER FUNCTIONALITY (UPDATED)
-// ==========================================
 
 // --- Controller / UI Functions ---
 
@@ -214,9 +208,6 @@ function applyWallpaper(url, type) {
 }
 
 
-// ==========================================
-// 3. WEEKLY SCHEDULE FUNCTIONALITY
-// ==========================================
 function updateCurrentDay() {
   const now = new Date();
   const currentDayIndex = now.getDay();
@@ -266,9 +257,7 @@ function getTodoCountSimple(dayIndex) {
   return todos.length;
 }
 
-// ==========================================
-// 4. TO-DO LOGIC
-// ==========================================
+
 function handleDayClick(dayIndex) {
   const modal = document.getElementById("todoModal");
   const todoListContainer = document.getElementById("todoList");
@@ -373,9 +362,7 @@ function editTodoItem(dayIndex, itemIndex, field) {
     }
 }
 
-// ==========================================
-// 5. SHORTCUTS
-// ==========================================
+
 function handleTimeClick() {
   const modal = document.getElementById("shortcutModal");
   if (!modal) {
@@ -463,9 +450,6 @@ function deleteShortcut(index) {
   updateClockAreaShortcuts();
 }
 
-// ==========================================
-// 6. YEAR PROGRESS
-// ==========================================
 function updateDaysLeft() {
   const daysLeftContainer = document.getElementById("dayLeftContainer");
   if (!daysLeftContainer) return;
@@ -574,9 +558,6 @@ function viewYearTodo(day, itemIndex) {
   document.getElementById("todoDetails").style.display = "flex";
 }
 
-// ==========================================
-// 7. UTILS & INIT
-// ==========================================
 function closeModal() { document.getElementById("todoModal").style.display = "none"; }
 function closeTodoDetails() { document.getElementById("todoDetails").style.display = "none"; }
 
