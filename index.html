@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="scripts/main.js" defer></script>
   </head>
-  <body class="bg-black w-screen h-screen text-white overflow-hidden">
+  <body style="background-color: #000000; overflow: hidden; margin: 0; padding: 0">
     <div class="main-container">
       <div
         style="
@@ -50,8 +50,9 @@
 
           <div style="display: flex; gap: 10px">
             <button
-              onclick="openWallpaperModal()"
+              id="openWallBtn"
               title="Change Wallpaper"
+              class="hover:text-white transition-colors duration-200"
               style="
                 background: #27272a;
                 color: #a1a1aa;
@@ -63,10 +64,7 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                transition: color 0.2s;
               "
-              onmouseover="this.style.color='white'"
-              onmouseout="this.style.color='#a1a1aa'"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +85,6 @@
 
             <button
               id="timeActionBtn"
-              onclick="handleTimeClick()"
               style="
                 background: #27272a;
                 color: #e4e4e7;
@@ -110,7 +107,7 @@
 
         <div id="wallpaperModal" class="modal">
           <div class="modal-content" style="max-width: 450px">
-            <span class="close" onclick="closeWallpaperModal()">&times;</span>
+            <span id="closeWallModalBtn" class="close">&times;</span>
             <h2 style="margin-top: 0">Wallpaper Settings</h2>
 
             <div
@@ -144,7 +141,7 @@
                 "
               />
               <button
-                onclick="saveWallpaperUrl()"
+                id="saveUrlBtn"
                 style="
                   width: 100%;
                   padding: 10px;
@@ -196,7 +193,7 @@
                 File too large! Please use an image under 2MB.
               </p>
               <button
-                onclick="saveWallpaperFile()"
+                id="saveFileBtn"
                 style="
                   width: 100%;
                   padding: 10px;
@@ -214,7 +211,7 @@
 
             <div style="margin-top: 20px; text-align: center">
               <button
-                onclick="resetWallpaper()"
+                id="resetWallBtn"
                 style="
                   background: none;
                   border: none;
@@ -395,7 +392,7 @@
 
     <div id="todoModal" style="overflow: auto" class="modal">
       <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span id="closeTodoModalBtn" class="close">&times;</span>
         <h2>To-Do List</h2>
         <div class="input-container">
           <label for="todoTitleInput">Title</label>
@@ -434,15 +431,13 @@
             overflow-y: auto;
             max-height: 70vh;
           "
-          ondrop="drop(event)"
-          ondragover="allowDrop(event)"
         ></div>
       </div>
     </div>
 
     <div id="todoDetails" class="todo-details">
       <div class="todo-details-content" id="todoDetailsContent"></div>
-      <span class="close" onclick="closeTodoDetails()">&times;</span>
+      <span id="closeTodoDetailsBtn" class="close">&times;</span>
     </div>
   </body>
 </html>

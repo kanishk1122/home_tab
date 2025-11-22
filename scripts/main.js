@@ -50,10 +50,117 @@ async function clearIndexedDB() {
   transaction.objectStore(STORE_NAME).clear();
 }
 
+// ==========================================
+// 1. INITIALIZATION & EVENT LISTENERS
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Initial Renders ---
+  updateTime();
+  updateCurrentDay();
+  updateClockAreaShortcuts();
+  initWallpaper();
+  updateDaysLeft();
+
+  // Start Clock Interval
+  setInterval(updateTime, 1000);
+
+  // --- Static Event Listeners (Matching HTML IDs) ---
+
+  // Wallpaper Modal
+  bindClick("openWallBtn", openWallpaperModal);
+  bindClick("closeWallModalBtn", closeWallpaperModal);
+  bindClick("saveUrlBtn", saveWallpaperUrl);
+  bindClick("saveFileBtn", saveWallpaperFile);
+  bindClick("resetWallBtn", resetWallpaper);
+
+  // Shortcuts
+  bindClick("timeActionBtn", handleTimeClick);
+
+  // To-Do Modal
+  bindClick("closeTodoModalBtn", closeModal);
+  bindClick("closeTodoDetailsBtn", closeTodoDetails);
+  // Note: "saveTodo" is handled dynamically in handleDayClick
+
+  // --- Event Delegation for Dynamic Lists ---
+
+  // 1. Year Grid Clicks (Delegation on container)
+  const dayLeftContainer = document.getElementById("dayLeftContainer");
+  if (dayLeftContainer) {
+    dayLeftContainer.addEventListener("click", (e) => {
+      const box = e.target.closest(".year-box");
+      if (box) {
+        const day = parseInt(box.dataset.day);
+        handleYearClick(day);
+      }
+    });
+  }
+
+  // 2. To-Do List Actions (Delete/View/Edit & Dragging)
+  const todoListEl = document.getElementById("todoList");
+  if (todoListEl) {
+    // Click Handling
+    todoListEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      const title = e.target.closest("h3");
+
+      if (btn) {
+        const action = btn.dataset.action;
+        const index = parseInt(btn.dataset.index);
+        const day = parseInt(btn.dataset.day);
+        const type = btn.dataset.type; // 'week' or 'year'
+
+        if (action === "delete") {
+          if (type === "year") deleteYearTodo(day, index);
+          else deleteTodoItem(day, index);
+        } else if (action === "view") {
+          if (type === "year") viewYearTodo(day, index);
+          else viewTodoDetails(day, index);
+        }
+      }
+      
+      // Double click on title to edit
+      if(e.target.tagName === 'H3' && e.detail === 2) { 
+          const itemDiv = e.target.closest('.todo-item');
+          const index = parseInt(itemDiv.dataset.index);
+          const day = parseInt(itemDiv.dataset.day);
+          editTodoItem(day, index, 'title');
+      }
+    });
+
+    // Drag Handling
+    todoListEl.addEventListener("dragstart", drag);
+    todoListEl.addEventListener("dragover", allowDrop);
+    todoListEl.addEventListener("drop", drop);
+  }
+
+  // 3. Window Click (Close Modals)
+  window.addEventListener("click", (event) => {
+    const todoModal = document.getElementById("todoModal");
+    const shortcutModal = document.getElementById("shortcutModal");
+    const detailsModal = document.getElementById("todoDetails");
+    const wallModal = document.getElementById("wallpaperModal");
+
+    if (event.target === todoModal) todoModal.style.display = "none";
+    if (event.target === shortcutModal) shortcutModal.style.display = "none";
+    if (event.target === detailsModal) detailsModal.style.display = "none";
+    if (event.target === wallModal) closeWallpaperModal();
+  });
+});
+
+// Helper to safely bind clicks
+function bindClick(id, handler) {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("click", handler);
+}
+
+// ==========================================
+// 2. WALLPAPER LOGIC
+// ==========================================
+
 function updateTime() {
   const timeDiv = document.getElementById("clock");
   if (!timeDiv) return;
-
   const now = new Date();
   const formattedTime = now.toLocaleTimeString("en-GB", {
     hour12: false,
@@ -62,9 +169,6 @@ function updateTime() {
   });
   timeDiv.textContent = formattedTime;
 }
-
-
-// --- Controller / UI Functions ---
 
 function openWallpaperModal() {
   document.getElementById("wallpaperModal").style.display = "block";
@@ -76,20 +180,16 @@ function closeWallpaperModal() {
   if (err) err.style.display = "none";
 }
 
-// A. Save via URL (Uses LocalStorage)
 function saveWallpaperUrl() {
   const url = document.getElementById("wallUrlInput").value.trim();
   if (!url) return;
 
-  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov'];
-  const isVideo = videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
-  const type = isVideo ? 'video' : 'image';
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov"];
+  const isVideo = videoExtensions.some((ext) => url.toLowerCase().endsWith(ext));
+  const type = isVideo ? "video" : "image";
 
-  // Clear DB to prioritize URL
   clearIndexedDB();
-
-  // Save Metadata
-  const wallpaperData = { source: 'url', type, url };
+  const wallpaperData = { source: "url", type, url };
   localStorage.setItem("user_wallpaper_meta", JSON.stringify(wallpaperData));
 
   applyWallpaper(url, type);
@@ -97,31 +197,23 @@ function saveWallpaperUrl() {
   document.getElementById("wallUrlInput").value = "";
 }
 
-// B. Save via File (Uses IndexedDB for Large Files)
 async function saveWallpaperFile() {
   const fileInput = document.getElementById("wallFileInput");
   const file = fileInput.files[0];
-
   if (!file) return;
 
-  // UI Feedback
-  const btn = fileInput.nextElementSibling.nextElementSibling; // The button
+  const btn = document.getElementById("saveFileBtn");
   const originalText = btn.innerText;
   btn.innerText = "Saving...";
 
   try {
-    // 1. Save heavy file to IndexedDB
     await saveFileToDB(file);
-
-    // 2. Save metadata to LocalStorage
-    const type = file.type.startsWith('video') ? 'video' : 'image';
-    const wallpaperData = { source: 'db', type: type };
+    const type = file.type.startsWith("video") ? "video" : "image";
+    const wallpaperData = { source: "db", type: type };
     localStorage.setItem("user_wallpaper_meta", JSON.stringify(wallpaperData));
 
-    // 3. Apply immediately using Object URL
     const objectUrl = URL.createObjectURL(file);
     applyWallpaper(objectUrl, type);
-
     closeWallpaperModal();
   } catch (err) {
     console.error("DB Error:", err);
@@ -132,31 +224,27 @@ async function saveWallpaperFile() {
   }
 }
 
-// C. Reset
 function resetWallpaper() {
   localStorage.removeItem("user_wallpaper_meta");
   clearIndexedDB();
-  initWallpaper(); // Re-init default
+  initWallpaper();
   closeWallpaperModal();
 }
 
-// --- Core Logic ---
-
 async function initWallpaper() {
   const meta = JSON.parse(localStorage.getItem("user_wallpaper_meta"));
-
-  // Default if nothing saved
   if (!meta) {
-    applyWallpaper('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1974', 'image');
+    applyWallpaper(
+      "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1974",
+      "image"
+    );
     setupDoubleClick();
     return;
   }
 
-  if (meta.source === 'url') {
-    // Load from URL
+  if (meta.source === "url") {
     applyWallpaper(meta.url, meta.type);
-  } else if (meta.source === 'db') {
-    // Load from IndexedDB
+  } else if (meta.source === "db") {
     try {
       const fileBlob = await getFileFromDB();
       if (fileBlob) {
@@ -167,50 +255,49 @@ async function initWallpaper() {
       console.error("Could not load wallpaper from DB", e);
     }
   }
-  
   setupDoubleClick();
 }
 
 function setupDoubleClick() {
-    const container = document.getElementById("daysParent");
-    if (container) {
-        // Clone to remove old listeners to avoid duplicates
-        const newContainer = container.cloneNode(true);
-        container.parentNode.replaceChild(newContainer, container);
-
-        newContainer.addEventListener("dblclick", (e) => {
-            if (
-                e.target === newContainer ||
-                e.target.classList.contains("dayLeftContainer") ||
-                e.target.classList.contains("media-content")
-            ) {
-                openWallpaperModal();
-            }
-        });
-    }
+  const container = document.getElementById("daysParent");
+  if (container) {
+    // We can use a simple onclick for this specific logic since it's top level
+    container.ondblclick = (e) => {
+      if (
+        e.target === container ||
+        e.target.classList.contains("dayLeftContainer") ||
+        e.target.classList.contains("media-content")
+      ) {
+        openWallpaperModal();
+      }
+    };
+  }
 }
 
 function applyWallpaper(url, type) {
   const imgEl = document.getElementById("wallpaperImage");
   const vidEl = document.getElementById("wallpaperVideo");
 
-  if (type === 'video') {
-    imgEl.classList.add('hidden');
-    vidEl.classList.remove('hidden');
+  if (type === "video") {
+    imgEl.classList.add("hidden");
+    vidEl.classList.remove("hidden");
     vidEl.src = url;
-    vidEl.play().catch(e => console.log("Autoplay blocked:", e));
+    vidEl.play().catch((e) => console.log("Autoplay blocked:", e));
   } else {
-    vidEl.classList.add('hidden');
+    vidEl.classList.add("hidden");
     vidEl.pause();
-    imgEl.classList.remove('hidden');
+    imgEl.classList.remove("hidden");
     imgEl.src = url;
   }
 }
 
+// ==========================================
+// 3. WEEKLY SCHEDULE LOGIC
+// ==========================================
 
 function updateCurrentDay() {
   const now = new Date();
-  const currentDayIndex = now.getDay();
+  const currentDayIndex = now.getDay(); // 0 = Sun
 
   const baseStyle =
     "border-radius: 12px; padding: 14px 0; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s ease;";
@@ -223,25 +310,23 @@ function updateCurrentDay() {
     const dayEl = document.getElementById(`day-${i}`);
     if (dayEl) {
       let finalStyle = baseStyle;
-
-      if (i === currentDayIndex) {
-        finalStyle += activeColors;
-      } else {
-        finalStyle += inactiveColors;
-      }
-
-      if (i === 0) {
-        finalStyle += " width: 100%;";
-      }
+      if (i === currentDayIndex) finalStyle += activeColors;
+      else finalStyle += inactiveColors;
+      if (i === 0) finalStyle += " width: 100%;";
 
       dayEl.style.cssText = finalStyle;
-      dayEl.onclick = () => handleDayClick(i);
+      
+      // Re-bind click using listener (safer)
+      // Clone node is a quick way to wipe old listeners to prevent duplicates on re-run
+      const newEl = dayEl.cloneNode(true);
+      dayEl.parentNode.replaceChild(newEl, dayEl);
+      newEl.addEventListener("click", () => handleDayClick(i));
 
       const count = getTodoCountSimple(i);
       if (count > 0 && i !== currentDayIndex) {
-        dayEl.innerHTML = `${getDayName(i)} <span style="font-size:8px; vertical-align: top; color: #3b82f6;">●</span>`;
+        newEl.innerHTML = `${getDayName(i)} <span style="font-size:8px; vertical-align: top; color: #3b82f6;">●</span>`;
       } else {
-        dayEl.innerText = getDayName(i);
+        newEl.innerText = getDayName(i);
       }
     }
   }
@@ -257,7 +342,6 @@ function getTodoCountSimple(dayIndex) {
   return todos.length;
 }
 
-
 function handleDayClick(dayIndex) {
   const modal = document.getElementById("todoModal");
   const todoListContainer = document.getElementById("todoList");
@@ -271,12 +355,13 @@ function handleDayClick(dayIndex) {
   const storageKey = `todo_week_${dayIndex}`;
   const todoList = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-  renderTodoList(todoList, todoListContainer, dayIndex);
+  renderTodoList(todoList, todoListContainer, dayIndex, "week");
 
+  // Handle Save Button
   const newSaveBtn = saveButton.cloneNode(true);
   saveButton.parentNode.replaceChild(newSaveBtn, saveButton);
 
-  newSaveBtn.onclick = () => {
+  newSaveBtn.addEventListener("click", () => {
     const newTitle = todoTitleInput.value.trim();
     const newDesc = todoDescInput.value.trim();
     if (newTitle && newDesc) {
@@ -284,36 +369,29 @@ function handleDayClick(dayIndex) {
       todoList.push(newTodo);
       localStorage.setItem(storageKey, JSON.stringify(todoList));
 
-      renderTodoList(todoList, todoListContainer, dayIndex);
+      renderTodoList(todoList, todoListContainer, dayIndex, "week");
       updateCurrentDay();
 
       todoTitleInput.value = "";
       todoDescInput.value = "";
     }
-  };
+  });
 
   modal.style.display = "block";
 }
 
-function renderTodoList(list, container, index, type = "week") {
+// Updated Render using Data Attributes (No inline onclick)
+function renderTodoList(list, container, dayIndex, type = "week") {
   container.innerHTML = list
     .map(
       (item, i) => `
-      <div class="todo-item" draggable="true" ondragstart="drag(event)" id="todo_${index}_${i}">
+      <div class="todo-item" draggable="true" id="todo_${dayIndex}_${i}" data-index="${i}" data-day="${dayIndex}">
         <div class="content">
-          <h3 ondblclick="editTodoItem(${index}, ${i}, 'title')">${item.title}</h3>
+          <h3>${item.title}</h3>
         </div>
         <div class="actions">
-          <button class="delete" onclick="${
-            type === "year"
-              ? `deleteYearTodo(${index}, ${i})`
-              : `deleteTodoItem(${index}, ${i}, event)`
-          }">Delete</button>
-          <button class="view" onclick="${
-            type === "year"
-              ? `viewYearTodo(${index}, ${i})`
-              : `viewTodoDetails(${index}, ${i}, event)`
-          }">View</button>
+          <button class="delete" data-action="delete" data-index="${i}" data-day="${dayIndex}" data-type="${type}">Delete</button>
+          <button class="view" data-action="view" data-index="${i}" data-day="${dayIndex}" data-type="${type}">View</button>
         </div>
       </div>
     `
@@ -321,55 +399,94 @@ function renderTodoList(list, container, index, type = "week") {
     .join("");
 }
 
-function deleteTodoItem(dayIndex, itemIndex, event) {
-  event.stopPropagation();
+function deleteTodoItem(dayIndex, itemIndex) {
   const storageKey = `todo_week_${dayIndex}`;
   const todoList = JSON.parse(localStorage.getItem(storageKey)) || [];
 
   todoList.splice(itemIndex, 1);
   localStorage.setItem(storageKey, JSON.stringify(todoList));
 
-  const todoListContainer = document.getElementById("todoList");
-  renderTodoList(todoList, todoListContainer, dayIndex);
+  renderTodoList(
+    todoList,
+    document.getElementById("todoList"),
+    dayIndex,
+    "week"
+  );
   updateCurrentDay();
 }
 
-function viewTodoDetails(dayIndex, itemIndex, event) {
-  event.stopPropagation();
+function viewTodoDetails(dayIndex, itemIndex) {
   const storageKey = `todo_week_${dayIndex}`;
   const todoList = JSON.parse(localStorage.getItem(storageKey)) || [];
 
   const todoDetails = document.getElementById("todoDetails");
   const todoDetailsContent = document.getElementById("todoDetailsContent");
 
-  todoDetailsContent.innerHTML = `
-      <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">${todoList[itemIndex].title}</h3>
-      <textarea readonly style="width: 100%; height: 150px; background: #27272a; color: white; padding: 10px; border-radius: 8px;">${todoList[itemIndex].description}</textarea>
-    `;
-  todoDetails.style.display = "flex";
+  if (todoList[itemIndex]) {
+    todoDetailsContent.innerHTML = `
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">${todoList[itemIndex].title}</h3>
+        <textarea readonly style="width: 100%; height: 150px; background: #27272a; color: white; padding: 10px; border-radius: 8px;">${todoList[itemIndex].description}</textarea>
+      `;
+    todoDetails.style.display = "flex";
+  }
 }
 
 function editTodoItem(dayIndex, itemIndex, field) {
-    // Basic edit functionality placeholder
     const storageKey = `todo_week_${dayIndex}`;
     const todoList = JSON.parse(localStorage.getItem(storageKey)) || [];
+    
     const newVal = prompt("Edit:", todoList[itemIndex][field]);
     if(newVal) {
         todoList[itemIndex][field] = newVal;
         localStorage.setItem(storageKey, JSON.stringify(todoList));
-        const todoListContainer = document.getElementById("todoList");
-        renderTodoList(todoList, todoListContainer, dayIndex);
+        renderTodoList(todoList, document.getElementById("todoList"), dayIndex);
     }
 }
 
+// ==========================================
+// 4. SHORTCUT LOGIC
+// ==========================================
 
 function handleTimeClick() {
-  const modal = document.getElementById("shortcutModal");
+  // Dynamic Modal Creation for Shortcuts
+  let modal = document.getElementById("shortcutModal");
   if (!modal) {
-    createShortcutModal();
+    modal = document.createElement("div");
+    modal.id = "shortcutModal";
+    modal.className = "modal";
+    modal.style.display = "none";
+    // ... styling handled in CSS usually, but inline for safety
+    modal.style.cssText = "position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);";
+    
+    modal.innerHTML = `
+      <div class="modal-content" style="background: #18181b; padding: 24px; border-radius: 16px; border: 1px solid #27272a; max-width: 500px; margin: 10% auto; position: relative;">
+        <h2 style="color: white; margin-bottom: 20px;">Shortcuts</h2>
+        <input type="text" id="shortcutName" placeholder="Name" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 8px;">
+        <input type="text" id="shortcutUrl" placeholder="URL (https://...)" style="width: 100%; padding: 10px; margin-bottom: 20px; background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 8px;">
+        <button id="addShortcutBtn" style="width: 100%; padding: 10px; background: white; color: black; border-radius: 8px; font-weight: bold; cursor: pointer;">Add Shortcut</button>
+        <div id="shortcutList" style="margin-top: 20px; color: #a1a1aa;"></div>
+        <span id="closeShortcutModal" style="position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 24px;">&times;</span>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Bind dynamic buttons
+    document.getElementById('addShortcutBtn').addEventListener('click', addShortcut);
+    document.getElementById('closeShortcutModal').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    // Delegation for delete shortcut
+    document.getElementById('shortcutList').addEventListener('click', (e) => {
+        if(e.target.tagName === 'BUTTON') {
+            const idx = e.target.dataset.index;
+            deleteShortcut(idx);
+        }
+    });
   }
+  
   displayShortcuts();
-  document.getElementById("shortcutModal").style.display = "block";
+  modal.style.display = "block";
 }
 
 function updateClockAreaShortcuts() {
@@ -400,21 +517,6 @@ function updateClockAreaShortcuts() {
   }
 }
 
-function createShortcutModal() {
-  const modalHTML = `
-    <div id="shortcutModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
-      <div class="modal-content" style="background: #18181b; padding: 24px; border-radius: 16px; border: 1px solid #27272a; max-width: 500px; margin: 10% auto;">
-        <h2 style="color: white; margin-bottom: 20px;">Shortcuts</h2>
-        <input type="text" id="shortcutName" placeholder="Name" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 8px;">
-        <input type="text" id="shortcutUrl" placeholder="URL (https://...)" style="width: 100%; padding: 10px; margin-bottom: 20px; background: #27272a; border: 1px solid #3f3f46; color: white; border-radius: 8px;">
-        <button onclick="addShortcut()" style="width: 100%; padding: 10px; background: white; color: black; border-radius: 8px; font-weight: bold; cursor: pointer;">Add Shortcut</button>
-        <div id="shortcutList" style="margin-top: 20px; color: #a1a1aa;"></div>
-        <span onclick="document.getElementById('shortcutModal').style.display='none'" style="position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 24px;">&times;</span>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML("beforeend", modalHTML);
-}
-
 function addShortcut() {
   const name = document.getElementById("shortcutName").value;
   const url = document.getElementById("shortcutUrl").value;
@@ -436,7 +538,7 @@ function displayShortcuts() {
       (s, i) => `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: #27272a; border-radius: 8px;">
             <span style="color: #e4e4e7;">${s.name}</span>
-            <button onclick="deleteShortcut(${i})" style="color: #ef4444; background: none; border: none; cursor: pointer;">Delete</button>
+            <button data-index="${i}" style="color: #ef4444; background: none; border: none; cursor: pointer;">Delete</button>
         </div>`
     )
     .join("");
@@ -449,6 +551,19 @@ function deleteShortcut(index) {
   displayShortcuts();
   updateClockAreaShortcuts();
 }
+
+function getFaviconUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`;
+  } catch (e) {
+    return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><circle cx="12" cy="12" r="10"/></svg>';
+  }
+}
+
+// ==========================================
+// 5. YEAR GRID LOGIC
+// ==========================================
 
 function updateDaysLeft() {
   const daysLeftContainer = document.getElementById("dayLeftContainer");
@@ -466,34 +581,47 @@ function updateDaysLeft() {
   const daysLeft = daysInYear - dayOfYear;
 
   daysLeftContainer.style.display = "grid";
-  daysLeftContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(calc(100% / 28), 1fr))";
+  daysLeftContainer.style.gridTemplateColumns =
+    "repeat(auto-fit, minmax(calc(100% / 28), 1fr))";
   daysLeftContainer.style.gap = "6px";
   daysLeftContainer.style.alignContent = "start";
 
-  const boxStyle = "width: 100%; aspect-ratio: 1; border-radius: 4px; cursor: pointer; position: relative; transition: transform 0.2s;";
+  const boxStyle =
+    "width: 100%; aspect-ratio: 1; border-radius: 4px; cursor: pointer; position: relative; transition: transform 0.2s;";
 
+  // Generate HTML with Data Attributes (No inline onclick)
   daysLeftContainer.innerHTML = `
-    ${Array.from({ length: dayOfYear }, (_, i) => `
-        <div onclick="handleYearClick(${i + 1})"
+    ${Array.from(
+      { length: dayOfYear },
+      (_, i) => `
+        <div class="year-box"
+             data-day="${i + 1}"
              title="Day ${i + 1}"
-             onmouseover="this.style.transform='scale(1.1)'" 
-             onmouseout="this.style.transform='scale(1)'"
-             style="${boxStyle} background: ${i + 1 === dayOfYear ? "#fff" : "#71717a"};
-                    box-shadow: ${i + 1 === dayOfYear ? "0 0 15px rgba(255,255,255,0.6)" : "none"};
-                    z-index: ${i + 1 === dayOfYear ? "2" : "1"};">
+             style="${boxStyle} background: ${
+        i + 1 === dayOfYear ? "#fff" : "#71717a"
+      };
+                  box-shadow: ${
+                    i + 1 === dayOfYear
+                      ? "0 0 15px rgba(255,255,255,0.6)"
+                      : "none"
+                  };
+                  z-index: ${i + 1 === dayOfYear ? "2" : "1"};">
             ${getYearTodoIndicator(i + 1)}
         </div>
-    `).join("")}
+    `
+    ).join("")}
 
-    ${Array.from({ length: daysLeft }, (_, i) => `
-        <div onclick="handleYearClick(${dayOfYear + i + 1})"
+    ${Array.from(
+      { length: daysLeft },
+      (_, i) => `
+        <div class="year-box"
+             data-day="${dayOfYear + i + 1}"
              title="Day ${dayOfYear + i + 1}"
-             onmouseover="this.style.transform='scale(1.1)'" 
-             onmouseout="this.style.transform='scale(1)'"
              style="${boxStyle} background: #27272a;">
             ${getYearTodoIndicator(dayOfYear + i + 1)}
         </div>
-    `).join("")}
+    `
+    ).join("")}
   `;
 }
 
@@ -522,7 +650,7 @@ function handleYearClick(day) {
   const newSaveBtn = saveButton.cloneNode(true);
   saveButton.parentNode.replaceChild(newSaveBtn, saveButton);
 
-  newSaveBtn.onclick = () => {
+  newSaveBtn.addEventListener("click", () => {
     const title = todoTitleInput.value.trim();
     const desc = todoDescInput.value.trim();
     if (title && desc) {
@@ -536,7 +664,7 @@ function handleYearClick(day) {
       todoTitleInput.value = "";
       todoDescInput.value = "";
     }
-  };
+  });
 
   modal.style.display = "block";
 }
@@ -554,51 +682,36 @@ function viewYearTodo(day, itemIndex) {
   const storageKey = `todo_day_${day}`;
   const list = JSON.parse(localStorage.getItem(storageKey)) || [];
   const item = list[itemIndex];
-  document.getElementById("todoDetailsContent").innerHTML = `<h3>${item.title}</h3><p>${item.description}</p>`;
+  document.getElementById(
+    "todoDetailsContent"
+  ).innerHTML = `<h3>${item.title}</h3><p>${item.description}</p>`;
   document.getElementById("todoDetails").style.display = "flex";
 }
 
-function closeModal() { document.getElementById("todoModal").style.display = "none"; }
-function closeTodoDetails() { document.getElementById("todoDetails").style.display = "none"; }
+function closeModal() {
+  document.getElementById("todoModal").style.display = "none";
+}
+function closeTodoDetails() {
+  document.getElementById("todoDetails").style.display = "none";
+}
 
-// Window click handler
-window.onclick = function (event) {
-  const todoModal = document.getElementById("todoModal");
-  const shortcutModal = document.getElementById("shortcutModal");
-  const detailsModal = document.getElementById("todoDetails");
-  const wallModal = document.getElementById("wallpaperModal");
+// ==========================================
+// 6. DRAG AND DROP UTILS
+// ==========================================
 
-  if (event.target == todoModal) todoModal.style.display = "none";
-  if (event.target == shortcutModal) shortcutModal.style.display = "none";
-  if (event.target == detailsModal) detailsModal.style.display = "none";
-  if (event.target == wallModal) closeWallpaperModal();
-};
-
-function drag(event) { event.dataTransfer.setData("text", event.target.id); }
-function allowDrop(event) { event.preventDefault(); }
+function drag(event) {
+  event.dataTransfer.setData("text", event.target.id);
+}
+function allowDrop(event) {
+  event.preventDefault();
+}
 function drop(event) {
   event.preventDefault();
   const data = event.dataTransfer.getData("text");
   const draggedElement = document.getElementById(data);
-  event.target.closest(".todo-item").insertAdjacentElement("beforebegin", draggedElement);
-}
-
-function getFaviconUrl(url) {
-  try {
-    const urlObj = new URL(url);
-    return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`;
-  } catch (e) {
-    return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><circle cx="12" cy="12" r="10"/></svg>';
+  if (draggedElement && event.target.closest(".todo-item")) {
+    event.target
+      .closest(".todo-item")
+      .insertAdjacentElement("beforebegin", draggedElement);
   }
 }
-
-// --- INITIALIZATION ---
-setInterval(updateTime, 1000);
-
-window.onload = () => {
-  updateTime();
-  updateCurrentDay();
-  updateClockAreaShortcuts();
-  initWallpaper();
-  updateDaysLeft();
-};
