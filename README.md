@@ -96,6 +96,62 @@ A minimalist yet powerful daily task tracker with real-time updates and visual p
 
 MIT License - Open source and free to use
 
+## ⚙️ Installation & Setup
+
+### 1. Clone
+
+```bash
+git clone https://github.com/kanishk1122/home_tab.git
+cd home_tab
+```
+
+### 2. Run Locally
+
+Open: d:\home_tab\index.html (double-click or drag into browser)
+
+### 3. Set as Homepage (Manual)
+
+Browser settings → Homepage → Use this file path or deploy URL.
+
+### 4. Load as Browser Extension (Chrome / Edge - MV3)
+
+1. Create manifest.json at project root (example below).
+2. Open chrome://extensions (or edge://extensions)
+3. Enable Developer Mode.
+4. Click Load Unpacked.
+5. Select folder: d:\Black_Hole_Dashboard
+6. Open a new tab to see override.
+
+### 5. Firefox Temporary Add-on
+
+Firefox supports MV3 (beta) or fallback:
+
+1. Open about:debugging#/runtime/this-firefox
+2. Click Load Temporary Add-on
+3. Select manifest.json
+   (New tab override works similarly.)
+
+### 6. Data Persistence
+
+- Tasks / shortcuts stored in localStorage & IndexedDB (wallpaper blob).
+- Removing extension without clearing site data preserves content if reloaded.
+
+### 📄 Manifest Example
+
+See root manifest.json file included.
+
+### Folder Structure (Essentials)
+
+```
+d:/
+  home_tab/
+    index.html
+    scripts/
+    styles/
+    public/
+    manifest.json
+```
+
 ---
 
 💻 [View Code](https://github.com/kanishk1122/home_tab)
