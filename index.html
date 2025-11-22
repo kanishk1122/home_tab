@@ -11,8 +11,217 @@
   <body class="bg-black w-screen h-screen text-white overflow-hidden">
     <div class="main-container">
       <!-- Time Component -->
-      <div class="time-container">
-        <div id="timeDisplay"></div>
+      <div
+        style="
+          background-color: #18181b;
+          border: 1px solid #27272a;
+          border-radius: 28px;
+          padding: 32px;
+          width: 90%;
+          max-width: 440px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+          position: relative;
+          margin-top: 0px;
+          font-family: sans-serif;
+        "
+      >
+        <div>
+          <span
+            style="
+              font-size: 0.75rem;
+              color: #71717a;
+              margin-bottom: 12px;
+              display: block;
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              font-weight: 600;
+            "
+            >Current Time</span
+          >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            "
+          >
+            <h1
+              id="clock"
+              style="
+                font-size: 4rem;
+                font-weight: 700;
+                line-height: 1;
+                color: #fafafa;
+                margin: 0;
+                font-variant-numeric: tabular-nums;
+                letter-spacing: -0.03em;
+              "
+            >
+              00:00
+            </h1>
+            <button
+              id="timeActionBtn"
+              onclick="handleTimeClick()"
+              style="
+                background: #27272a;
+                color: #e4e4e7;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                border: 1px solid #3f3f46;
+                font-size: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                padding-bottom: 4px;
+              "
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div
+          style="height: 1px; background: #27272a; margin: 28px 0; width: 100%"
+        ></div>
+
+        <div>
+          <span
+            style="
+              font-size: 0.75rem;
+              color: #71717a;
+              margin-bottom: 12px;
+              display: block;
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              font-weight: 600;
+            "
+            >Schedule</span
+          >
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(6, 1fr);
+              gap: 8px;
+              margin-bottom: 8px;
+            "
+          >
+            <div
+              id="day-1"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Mon
+            </div>
+            <div
+              id="day-2"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Tue
+            </div>
+            <div
+              id="day-3"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Wed
+            </div>
+            <div
+              id="day-4"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Thu
+            </div>
+            <div
+              id="day-5"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Fri
+            </div>
+            <div
+              id="day-6"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+              "
+            >
+              Sat
+            </div>
+          </div>
+
+          <div style="width: 100%">
+            <div
+              id="day-0"
+              style="
+                background: #27272a;
+                color: #a1a1aa;
+                border-radius: 12px;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+                width: 100%;
+              "
+            >
+              Sun
+            </div>
+          </div>
+        </div>
+
+        <div id="clockAreaShortcuts" style="display: none"></div>
       </div>
 
       <!-- Days Component -->
