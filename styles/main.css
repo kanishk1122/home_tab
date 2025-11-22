@@ -428,3 +428,203 @@ body {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 }
+
+
+.days-container {
+  flex-grow: 1;
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 28px;
+  position: relative; /* Essential for absolute positioning inside */
+  overflow: hidden; /* Clips the image/video corners */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* 1. The Wallpaper Layer */
+.media-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Lowest layer */
+  pointer-events: none; /* Let clicks pass through if needed */
+}
+
+.media-content {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures image/video fills the box without stretching */
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 2. The Grid Layer (Days Left) */
+.dayLeftContainer {
+  position: relative;
+  z-index: 10; /* Above the wallpaper */
+  width: 100%;
+  height: 100%;
+  
+  /* Hidden by default */
+  opacity: 0; 
+  transition: opacity 0.4s ease-in-out, backdrop-filter 0.4s ease;
+  
+  /* Scroll handling */
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  
+  /* Visuals when visible */
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark overlay */
+  backdrop-filter: blur(0px);
+}
+
+/* 3. The HOVER Trigger */
+/* When user hovers over the PARENT (#daysParent), show the grid */
+#daysParent:hover .dayLeftContainer {
+  opacity: 1;
+  backdrop-filter: blur(8px); /* Nice blur effect on the wallpaper */
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #27272a; 
+}
+::-webkit-scrollbar-thumb {
+  background: #52525b; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #71717a; 
+}
+
+/* Modal Styling */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 100; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.8); 
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: #18181b;
+  margin: 10% auto; 
+  padding: 20px;
+  border: 1px solid #3f3f46;
+  border-radius: 16px;
+  width: 80%;
+  max-width: 500px;
+  color: white;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.input-container {
+  margin-bottom: 15px;
+}
+
+.input-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #a1a1aa;
+}
+
+.input-container input,
+.input-container textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #3f3f46;
+  background: #27272a;
+  color: white;
+  box-sizing: border-box;
+}
+
+/* To-Do Items */
+.todo-item {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: grab;
+  width: 100%;
+}
+
+.todo-item h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #e4e4e7;
+}
+
+.actions button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.actions .delete {
+  background: #ef4444;
+  color: white;
+}
+
+.actions .view {
+  background: #3b82f6;
+  color: white;
+}
+
+.todo-details {
+  display: none;
+  position: fixed;
+  z-index: 101;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.todo-details-content {
+  background: #18181b;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  border: 1px solid #3f3f46;
+  position: relative;
+}

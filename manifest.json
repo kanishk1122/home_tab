@@ -2,9 +2,22 @@
   "manifest_version": 3,
   "name": "Into the Black Hole + Icons",
   "version": "1.0",
-  "description": "True AMOLED black theme with custom dashboard icons",
+  "description": "True AMOLED black dashboard and browser theme",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
-  "permissions": ["topSites"] 
+  "permissions": ["storage" ,"unlimitedStorage","topSites"],
+  "theme": {
+    "colors": {
+      "frame": [0, 0, 0],
+      "toolbar": [0, 0, 0],
+      "ntp_background": [0, 0, 0],
+      "ntp_text": [255, 255, 255],
+      "tab_text": [255, 255, 255],
+      "tab_background_text": [150, 150, 150],
+      "button_background": [0, 0, 0],
+      "omnibox_background": [20, 20, 20],
+      "omnibox_text": [255, 255, 255]
+    }
+  }
 }
