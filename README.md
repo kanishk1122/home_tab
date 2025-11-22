@@ -6,109 +6,83 @@ A minimalist yet powerful daily task tracker with real-time updates and visual p
 
 ## 🎯 Key Features
 
-- **Live Clock Display**
+- Live Clock (24h HH:MM format, zinc styled)
+- Year Progress Grid (past / current / future days)
+- Weekly Schedule Panel (Sun–Sat quick task access)
+- Dual Task Modes (Weekly tasks + Day-of-year tasks)
+- Shortcut Manager (favicon linked quick launch icons)
+- Wallpaper System (URL image/video or local image upload)
+- IndexedDB storage for large local wallpaper files
+- Drag-and-Drop Task Ordering
+- Inline Title Edit (double-click)
+- Task Detail Viewer
+- Favicon Auto-Fetch (Google service fallback)
+- Zinc Theme UI (neutral dark palette)
 
-  - Millisecond precision
-  - Clean, minimalist design
-  - Responsive sizing across devices
+## 🖼 Wallpaper Management
 
-- **Visual Year Progress**
+- Open wallpaper modal via:
+  - Change icon button
+  - Double-click empty background area
+- Set from URL (supports images or MP4/WebM/Ogg/MOV video)
+- Upload local image (IndexedDB persisted)
+- Automatic type detection (image vs video)
+- Reset to default Unsplash image
+- Large file support via IndexedDB (avoids localStorage limits)
 
-  - Interactive day blocks
-  - Real-time progress tracking
-  - Color-coded status indicators
-  - Hover effects and tooltips
+## ⚡ Shortcuts
 
-- **Task Management**
-  - Daily task organization
-  - Drag-and-drop prioritization
-  - Quick edit functionality
-  - Task count indicators
-  - Detailed task views
+- Click + button next to clock to open shortcut modal
+- Add (Name + URL) – favicon auto-fetched
+- Compact circular favicon pills under clock
+- Delete shortcuts from modal
+- Stored in localStorage (persistent)
 
-## 🚀 Quick Start
+## 📅 Weekly Schedule
 
-1. **Setup Options:**
+- Separate weekly task list keyed by `todo_week_<dayIndex>`
+- Current day highlighted (light zinc)
+- Indicator dot for days with tasks
+- Double-click task title to edit
+- View / Delete actions per item
 
-   - Use hosted version: [Live Demo](https://kanishk1122.github.io/home_tab/)
-   - Download and run locally
-   - Set as browser homepage
+## 📆 Year Grid
 
-2. **Local Installation:**
+- Dynamically rendered 365/366 day boxes
+- Current day highlighted (white pulse effect via box-shadow)
+- Small indicator dot for days with tasks (`todo_day_<n>`)
 
-   ```bash
-   git clone https://github.com/kanishk1122/home_tab.git
-   cd home_tab
-   ```
+## 🛠 Technical Notes
 
-3. **Browser Setup:**
-   - [Detailed Browser Setup Guide](BROWSER_SETUP.md)
-   - Works with Chrome, Firefox, Edge, and Safari
+- localStorage: tasks + shortcut metadata + wallpaper meta
+- IndexedDB: stored binary of uploaded wallpaper (large files)
+- Dynamic event delegation (minimal inline handlers)
+- Graceful fallback SVG if favicon fails
 
-## 💻 Interface Guide
+## 🔄 Data Keys
 
-### Time Display
+- Weekly tasks: `todo_week_0` … `todo_week_6`
+- Year day tasks: `todo_day_1` … `todo_day_365|366`
+- Shortcuts: `shortcuts`
+- Wallpaper meta: `user_wallpaper_meta`
+- IndexedDB store: `current_wallpaper`
 
-- Left panel shows current time
-- Updates in real-time
-- 24-hour format with milliseconds
-- Responsive sizing
+## 📝 Usage Tips
 
-### Day Grid
-
-- White blocks: Past days
-- Gradient block: Current day
-- Dark blocks: Future days
-- Hover for day number
-- Click to manage tasks
-
-### Task Management
-
-- Click any day to open task manager
-- Add tasks with title and description
-- Drag to reorder priority
-- Quick view and edit options
-- Task count badges
-
-## 🎨 Design Features
-
-- Dark theme optimized
-- Blur effects and gradients
-- Smooth animations
-- Responsive layout
-- Mobile-friendly design
-
-## ⚡ Performance
-
-- Lightweight implementation
-- Local storage for data
-- No external dependencies
-- Fast loading times
-- Offline functionality
-
-## 🔧 Technical Details
-
-- Pure HTML/CSS/JavaScript
-- Local storage for persistence
-- Responsive grid system
-- CSS Grid and Flexbox layout
-- Custom scrollbar styling
-
-## 📱 Device Support
-
-- **Desktop:** Full support
-- **Tablet:** Optimized layout
-- **Mobile:** Responsive design
-- **Minimum width:** 320px
-- **Recommended:** 768px+
+- Double-click background to quickly open wallpaper settings
+- Rotate + button (animation) indicates interaction
+- Drag tasks to reorder priority
+- Hover year boxes for tooltips (via title attr)
+- Minimal footprint; all data local
 
 ## 🔜 Upcoming Features
 
-- [ ] Theme customization
-- [ ] Data export/import
-- [ ] Task categories
-- [ ] Search functionality
-- [ ] Task statistics
+- [ ] Export / Import (tasks + shortcuts + wallpaper meta)
+- [ ] Weekly summary / analytics
+- [ ] Optional milliseconds toggle for clock
+- [ ] Theme variants (emerald / slate / rose)
+- [ ] Global search across tasks
+- [ ] Tagging & filters
 
 ## 🤝 Contributing
 

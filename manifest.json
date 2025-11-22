@@ -6,5 +6,11 @@
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
+  "icons": {
+    "16": "public/8.png",
+    "48": "public/48.png",
+    "128": "public/128.png"
+  },
+
   "permissions": ["storage", "unlimitedStorage", "topSites"]
 }
