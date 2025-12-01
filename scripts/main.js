@@ -505,7 +505,7 @@ function updateClockAreaShortcuts() {
     shortcutContainer.innerHTML = shortcuts
       .map(
         (shortcut) => `
-        <a href="${shortcut.url}" target="_blank" title="${shortcut.name}" 
+        <a href="${shortcut.url}" title="${shortcut.name}" 
            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #27272a; border-radius: 50%; border: 1px solid #3f3f46; transition: transform 0.2s;">
             <img src="${getFaviconUrl(shortcut.url)}" style="width: 16px; height: 16px; border-radius: 2px;">
         </a>
